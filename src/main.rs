@@ -1,4 +1,5 @@
 use std::env;
+use std::fs;
 
 #[derive(Debug)]
 struct Chip8 {
@@ -16,8 +17,17 @@ struct Chip8 {
 }
 
 impl Chip8 {
-    fn load_rom(&self, file_path: &String) {
+    fn load_rom(&mut self, file_path: &String) {
         println!("{:?}", file_path);
+
+        // Read file into chip-8
+        let file_as_bytes = fs::read(file_path).expect("File couldn't be read.");
+
+        let chip8_program_starting_address = 0x200;
+
+        for (idx, i) in file_as_bytes.iter().enumerate() {
+            self.memory[chip8_program_starting_address + idx] = *i;
+        }
     }
 }
 
@@ -83,5 +93,5 @@ fn main() {
 
     chip_8.load_rom(file_path);
 
-    println!("{:?}", chip_8.memory);
+    println!("{:?}", chip_8.memory[0x201]);
 }
