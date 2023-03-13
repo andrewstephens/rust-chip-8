@@ -32,10 +32,61 @@ impl Chip8 {
     }
 
     fn cycle(&mut self) -> u16 {
+        // Get the opcode
         let opcode_first_piece = (self.memory[self.pc] as u16) << 8;
         let opcode_second_piece = self.memory[self.pc + 1] as u16;
         let opcode = opcode_first_piece | opcode_second_piece;
+
+        self.execute_opcode(opcode);
+
+        self.update_timers();
+
+        // Increment the PC by 2
+        self.pc += 2;
+
+        // Execute the opcode
         return opcode;
+    }
+
+    fn update_timers(&mut self) {
+        if self.delay_timer > 0 {
+            self.delay_timer -= 1;
+        }
+
+        if self.sound_timer > 0 {
+            self.sound_timer -= 1;
+        }
+    }
+
+    fn play_sound(&mut self) {
+        if self.sound_timer > 0 {
+            // TODO: Implement sound playing
+        } else {
+            // TODO: Implement stopping the sound
+        }
+    }
+
+    fn execute_opcode(&mut self, opcode: u16) {
+        // Decode the opcode
+        let nib = (opcode & 0xf0) >> 4;
+
+        println!("{:#06x}", nib);
+
+        let ops = match nib {
+            0x01 => {
+                // JUMP $NNN
+                self.op_1nnn(opcode & 0x0FFF)
+            },
+            0xe0 => {
+                println!("0xE0");
+            }
+            _ => println!("Placeholder")
+        };
+    }
+
+    fn op_1nnn(&mut self, opcode: u16) {
+        println!("1nnn opcode fn");
+        println!("{:#06x}", opcode);
     }
 
     // Clear the display -- OP Code 00E0 -- CLS
@@ -104,7 +155,8 @@ fn main() {
 
     chip_8.load_rom(file_path);
 
-    let opcode = chip_8.cycle();
-
-    println!("{:#06x}", opcode);
+    for i in 1..10 {
+        let opcode = chip_8.cycle();
+        println!("{:#06x}", opcode);
+    }
 }
