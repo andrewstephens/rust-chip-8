@@ -68,19 +68,17 @@ impl Chip8 {
 
     fn execute_opcode(&mut self, opcode: u16) {
         // Decode the opcode
-        let nib = (opcode & 0xf0) >> 4;
+        let nnn = (opcode & 0x0FFF) as usize;
+        let kk = (opcode & 0x00FF) as u8;
+        let x = (opcode & 0x0F00) as u8;
+        let y = (opcode & 0x00F0) as u8;
+        let n = (opcode & 0x000F) as u8;
 
-        println!("{:#06x}", nib);
-
-        let ops = match nib {
-            0x01 => {
-                // JUMP $NNN
-                self.op_1nnn(opcode & 0x0FFF)
-            },
-            0xe0 => {
-                println!("0xE0");
-            }
-            _ => println!("Placeholder")
+        let change = match opcode {
+            0x00e0 => println!("00E0"),
+            0x00ee => println!("00EE"),
+            
+            _ => println!("OPCODE: {:#06X} No implemented", opcode)
         };
     }
 
